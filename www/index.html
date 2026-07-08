@@ -145,7 +145,7 @@
     <div class="timeline" id="timeline"></div>
     <div class="demo">
       <div class="dh"><b>🧪 데모용 시간 이동</b><span class="dt" id="demoTime">실시간</span></div>
-      <input type="range" id="demoSlider" min="480" max="920" step="1" value="480">
+      <input type="range" id="demoSlider" min="480" max="1000" step="1" value="480">
       <div class="note">슬라이더를 움직이면 하루 중 원하는 시각으로 이동해 화면 전환·예고 알림을 바로 확인할 수 있습니다. 맨 왼쪽으로 두면 실제 시간으로 돌아갑니다. (위 요일 버튼으로 다른 요일 시간표도 미리 볼 수 있어요.)</div>
     </div>
     <div class="footer">「지금이시간」 프로토타입 · 팀 모두의시간 · 2026 장애 플러스 기술 (분야1 디지털 포용)<br>※ 데모의 그림은 이모지 대체입니다. 실제 앱은 저작권 문제없는 ARASAAC 공개 상징을 사용합니다.</div>
@@ -192,14 +192,17 @@ function load(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 var DAYS=[["mon","월"],["tue","화"],["wed","수"],["thu","목"],["fri","금"]];
 var DAYKEYS=DAYS.map(function(d){return d[0]});
-var DEFAULT_TT=[{t:"08:40",name:"아침맞이",emoji:"🌅"},{t:"08:50",name:"1교시 국어",emoji:"📖"},{t:"09:35",name:"쉬는 시간",emoji:"🧃"},{t:"09:45",name:"2교시 수학",emoji:"🔢"},{t:"10:30",name:"쉬는 시간",emoji:"🧃"},{t:"10:40",name:"3교시 영어",emoji:"🔤"},{t:"11:25",name:"쉬는 시간",emoji:"🧃"},{t:"11:35",name:"4교시 과학",emoji:"🔬"},{t:"12:20",name:"점심 시간",emoji:"🍚"},{t:"13:10",name:"5교시 사회",emoji:"🌏"},{t:"13:55",name:"쉬는 시간",emoji:"🧃"},{t:"14:05",name:"6교시 체육",emoji:"⚽"},{t:"14:50",name:"집에 갈 준비",emoji:"🎒"},{t:"15:00",name:"하교",emoji:"👋"}];
+var BELL=[["08:00","등교 시간","🚶"],["08:30","학급조례","🧑‍🏫"],["08:40","쉬는 시간","🧃"],["08:50",1],["09:35","쉬는 시간","🧃"],["09:45",2],["10:30","쉬는 시간","🧃"],["10:40",3],["11:25","쉬는 시간","🧃"],["11:35",4],["12:20","점심 시간","🍚"],["13:10",5],["13:55","쉬는 시간","🧃"],["14:05",6],["14:50","쉬는 시간","🧃"],["15:00",7],["15:45","하교","👋"]];
+var SUBJ={"국어":"📖","수학":"🔢","사회":"🌏","언어치료":"🗣️","진로와직업":"💼","창체":"🎪","통합학급":"🏫"};
+var PLAN={mon:{3:"국어",6:"진로와직업",7:"진로와직업"},tue:{1:"언어치료",2:"언어치료",3:"수학",4:"사회",6:"국어"},wed:{2:"사회",3:"수학",5:"진로와직업"},thu:{5:"언어치료",6:"언어치료"},fri:{4:"국어",5:"사회",6:"창체",7:"창체"}};
+function buildDay(dk){var plan=PLAN[dk]||{};return BELL.map(function(b){if(b.length===2){var p=b[1],sj=plan[p]||"통합학급";return {t:b[0],name:p+"교시 "+sj,emoji:SUBJ[sj]||"🏫"};}return {t:b[0],name:b[1],emoji:b[2]};});}
 var AVATARS=["🦊","🐰","🐻","🐼","🐨","🐯","🦁","🐵","🐸","🐧"];
 var DEFAULT_SET={scale:1,img:true,tts:true,warnMin:3,contrast:false};
 var students=load("zs_students",[{name:"김하준",av:"🦊"},{name:"이서연",av:"🐰"},{name:"박도윤",av:"🐻"}]);
 var current=null,WEEK={},SET={},viewDay="mon",editDay="mon",demoMinutes=0,lastWarnedIndex=-1,lastNowIndex=-1,ticker=null,actx;
 function ttKey(){return "zs_week_"+current}
 function setKey(){return "zs_set_"+current}
-function newWeek(){var w={};DAYKEYS.forEach(function(k){w[k]=JSON.parse(JSON.stringify(DEFAULT_TT))});return w}
+function newWeek(){var w={};DAYKEYS.forEach(function(k){w[k]=buildDay(k)});return w}
 
 function renderProfiles(){
   var box=document.getElementById("profiles");box.innerHTML="";
@@ -369,7 +372,7 @@ function renderTTedit(){
 }
 function addRow(){WEEK[editDay].push({t:"00:00",name:"새 활동",emoji:"🙂"});renderTTedit()}
 function delRow(i){WEEK[editDay].splice(i,1);renderTTedit()}
-var EMOJIS=["📖","🔢","🔤","🔬","🌏","🎨","🎵","⚽","💻","📚","✍️","🧪","🌱","🗣️","🧩","🎭","🌅","🧃","🍚","🥛","🚻","🚶","🚌","🎒","👋","😴","🧹","🧑‍🏫","🩺","🏫","⏰","🛏️","🧸","📝","✅","🙂","😀","👍","⭐","❤️"];
+var EMOJIS=["📖","🔢","🔤","🔬","🌏","🎨","🎵","⚽","💻","📚","✍️","🧪","🌱","🗣️","🧩","🎭","🌅","🧃","🍚","🥛","🚻","🚶","🚌","🎒","👋","😴","🧹","🧑‍🏫","🩺","🏫","💼","🎪","⏰","🛏️","🧸","📝","✅","🙂","😀","👍","⭐","❤️"];
 var pickRow=-1;
 function openEmojiPicker(i){
   pickRow=i;var g=document.getElementById("epickGrid");g.innerHTML="";
